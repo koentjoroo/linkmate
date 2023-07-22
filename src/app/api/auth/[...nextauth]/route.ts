@@ -27,16 +27,19 @@ const authOptions: AuthOptions = {
         if (!credentials?.username || !credentials.password) {
           throw new Error('Missing username or password')
         }
-        const response = await fetch(`${process.env.API_BASE_URL}/auth/login`, {
-          method: 'POST',
-          body: JSON.stringify({
-            username: credentials?.username,
-            password: credentials?.password,
-          }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`,
+          {
+            method: 'POST',
+            body: JSON.stringify({
+              username: credentials?.username,
+              password: credentials?.password,
+            }),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        )
         const user = await response.json()
         if (user) {
           return user

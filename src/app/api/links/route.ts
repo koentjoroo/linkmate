@@ -56,10 +56,8 @@ export async function POST(request: Request) {
     })
     if (exist) {
       return NextResponse.json(
-        { error: 'link exist' },
-        {
-          status: 404,
-        }
+        { error: 'Link pendek ini sudah digunakan' },
+        { status: 409 }
       )
     }
     const link = await prisma.link.create({
@@ -72,6 +70,6 @@ export async function POST(request: Request) {
     return NextResponse.json(link)
   } catch (error) {
     console.error(error)
-    return NextResponse.json(null)
+    return NextResponse.json({ error }, { status: 500 })
   }
 }

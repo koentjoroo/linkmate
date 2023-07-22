@@ -21,7 +21,12 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="sidenav-container">
-      <input id="drawer" className="sidenav-toggle" type="checkbox" />
+      <input
+        id="drawer"
+        className="sidenav-toggle"
+        type="checkbox"
+        defaultChecked={true}
+      />
       <aside className="sidenav-menu border-r border-r-base">
         <div className="flex flex-col h-full">
           <div className="h-24 px-4 flex justify-center items-center text-center font-bold bg-base-100">

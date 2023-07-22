@@ -6,9 +6,7 @@ export default function GoogleSignInButton() {
     <button
       type="button"
       className="btn btn-outline rounded-full w-48 mx-auto"
-      onClick={() =>
-        signIn('google', { callbackUrl: '/dashboard', redirect: true })
-      }
+      onClick={() => signIn('google', { callbackUrl: '/', redirect: true })}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

@@ -1,5 +1,5 @@
 'use client'
-import axios from 'axios'
+import axios from '@/lib/axios'
 import { useMutation } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import Link from 'next/link'
@@ -24,7 +24,7 @@ export function SignUpForm() {
 
   const mutation = useMutation(
     (formData: FormData) => {
-      return axios.post('/api/auth/register', formData)
+      return axios.post('/auth/register', formData)
     },
     {
       onSuccess: (response) => {

@@ -1,6 +1,7 @@
 import './font.css'
 import './globals.css'
 import Providers from '@/utils/provider'
+import ToasterContext from '@/components/toaster-context'
 import React from 'react'
 import type { Metadata } from 'next'
 
@@ -20,7 +21,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <ToasterContext />
+        </Providers>
       </body>
     </html>
   )

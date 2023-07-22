@@ -5,6 +5,9 @@ import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 import { CgSpinner } from 'react-icons/cg'
 import { useSearchParams } from 'next/navigation'
+import toast from 'react-hot-toast'
+import { useEffect, useMemo } from 'react'
+import { FcInfo } from 'react-icons/fc'
 
 type FormData = {
   username: string
@@ -20,18 +23,38 @@ export function SignInForm() {
 
   const params = useSearchParams()
 
+  const callbackUrl = useMemo(() => {
+    const url = params.get('callbackUrl') || '/'
+    const newParams = new URLSearchParams()
+    newParams.append('urlShort', params.get('urlShort') ?? '')
+    newParams.append('urlLong', params.get('urlLong') ?? '')
+    if (url === '/') {
+      return url + '?' + newParams.toString()
+    }
+    return url
+  }, [params])
+
   const mutation = useMutation(
     async (formData: FormData) => {
       await signIn('credentials', {
         username: formData.username,
         password: formData.password,
         redirect: true,
-        callbackUrl: params.get('callbackUrl') || '/dashboard',
+        callbackUrl,
+      }).then((callback) => {
+        if (callback?.error) {
+          toast.error(callback.error)
+        }
+        if (callback?.ok && !callback?.error) {
+          toast.success('Berhasil Masuk!')
+        }
       })
     },
     {
       onError: (error) => {
-        alert(error)
+        if (error instanceof Error) {
+          toast.error(error.message)
+        }
       },
     }
   )
@@ -39,6 +62,21 @@ export function SignInForm() {
   const onSubmit = handleSubmit((data) => {
     mutation.mutate(data)
   })
+
+  useEffect(() => {
+    const type = params.get('redirect')
+    if (type === 'signup_success') {
+      toast.success('Pendaftaran Berhasil! Silahkan Masuk!')
+    }
+    if (type === 'session_expired') {
+      toast.error('Sesimu telah habis. Mohon masuk kembali.')
+    }
+    if (type === 'unauthenticated') {
+      toast('Silahkan login terlebih dahulu', {
+        icon: <FcInfo />,
+      })
+    }
+  }, [])
 
   return (
     <form

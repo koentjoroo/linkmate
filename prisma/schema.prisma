@@ -44,6 +44,7 @@ model User {
   email          String?   @unique
   emailVerified  DateTime?
   image          String?
+  fullName       String?
   phoneNumber    String?
   hashedPassword String?
   createdAt      DateTime  @default(now())
@@ -66,7 +67,7 @@ model Link {
   urlLong   String
   urlShort  String
   user      User      @relation(fields: [userId], references: [id])
-  userId    String    @unique
+  userId    String
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
 }

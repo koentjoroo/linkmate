@@ -1,11 +1,14 @@
 'use client'
 
+import useAxiosAuth from '@/lib/hooks/useAxiosAuth'
 import { useMutation } from '@tanstack/react-query'
-import axios from 'axios'
+import { AxiosError } from 'axios'
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import toast from 'react-hot-toast'
+import { toast } from 'react-hot-toast'
+import { BiCopy } from 'react-icons/bi'
 import { CgSpinner } from 'react-icons/cg'
 
 type FormData = {
@@ -14,66 +17,158 @@ type FormData = {
 }
 
 export default function HomeShortLinkForm() {
+  const [link, setLink] = useState<string>('')
+
+  const axiosAuth = useAxiosAuth()
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
+    watch,
   } = useForm<FormData>()
 
   const router = useRouter()
   const { data: session } = useSession()
 
-  const mutation = useMutation(async (formData: FormData) => {
-    const response = await axios.post('/api/links', formData, {
-      headers: {
-        Authorization: session?.user?.accessToken,
+  const mutation = useMutation(
+    async (formData: FormData) => {
+      return await axiosAuth.post('/links', formData)
+    },
+    {
+      onSuccess: (response) => {
+        if (response.status === 401) {
+          router.push('/auth/signin')
+        }
+        setLink(shapeLink(response.data.urlShort))
+        toast.success('Berhasil memperpendek link!')
       },
-    })
-    if (response.status === 401) {
-      router.push('/auth/signin')
+      onError: (error) => {
+        setLink('')
+        if (error instanceof AxiosError) {
+          toast.error(error.response?.data?.error)
+        } else if (error instanceof Error) {
+          toast.error(error.message)
+        }
+      },
     }
-    if (!response?.data) {
-      toast.error('Oops! Something wrong when shortening your URL.')
-      return
-    }
-    toast.success('Successfully shortened the URL!')
-  })
+  )
 
   const onSubmit = handleSubmit((data) => {
-    mutation.mutate(data)
+    if (!session?.user) {
+      const params = new URLSearchParams()
+      params.append('redirect', 'unauthenticated')
+      params.append('urlShort', watch('urlShort'))
+      params.append('urlLong', watch('urlLong'))
+      router.push(`/auth/signin?${params.toString()}`)
+    } else {
+      setLink('')
+      mutation.mutate(data)
+    }
   })
+
+  const onCopy = async () => {
+    await navigator.clipboard.writeText(link)
+    toast.success('Link telah disalin ke papan klip!')
+  }
+
+  const shapeLink = (shortUrl: string) => {
+    return [process.env.NEXT_PUBLIC_SHORTLINK_BASE_URL, '/', shortUrl].join('')
+  }
+
+  const inputRef = useRef<HTMLInputElement | null>(null)
+  const params = useSearchParams()
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.value = link
+    }
+
+    if (params.get('urlShort') && params.get('urlLong')) {
+      setValue('urlShort', params.get('urlShort') ?? '')
+      setValue('urlLong', params.get('urlLong') ?? '')
+    }
+
+    return () => {}
+  }, [link])
 
   return (
     <>
-      <form className="flex flex-col gap-4" onSubmit={onSubmit}>
+      <div className="hero-content w-full container mx-auto p-16">
         <div>
-          <input
-            className="input input-bordered w-full"
-            type="text"
-            placeholder="Masukkan link panjangmu"
-            {...register('urlLong')}
-          />
+          <article className="prose prose-2xl">
+            <h1>Perpendek link dengan sekali klik!</h1>
+            <p>Deskripsi singkat mengenai short link uhuy</p>
+          </article>
+          <div className="mt-4">
+            <form className="flex flex-col gap-4" onSubmit={onSubmit}>
+              <div>
+                <input
+                  className="input input-bordered w-full"
+                  type="text"
+                  placeholder="Masukkan link panjangmu"
+                  {...register('urlLong')}
+                />
+              </div>
+              <div className="join">
+                <span className="join-item p-3 bg-primary text-primary-content">
+                  {process.env.NEXT_PUBLIC_SHORTLINK_BASE_URL}/
+                </span>
+                <input
+                  className="input input-bordered join-item w-full"
+                  type="text"
+                  placeholder="Masukkan nama linkmu"
+                  {...register('urlShort', { minLength: 3 })}
+                />
+              </div>
+              <button
+                type="submit"
+                className="btn btn-primary btn-wide"
+                disabled={mutation.isLoading}
+              >
+                {mutation.isLoading && <CgSpinner className="animate-spin" />}
+                {mutation.isLoading ? 'Memuat...' : 'Potong!'}
+              </button>
+              {!mutation.isLoading && mutation.isSuccess && link && (
+                <div
+                  className="relative w-1/2 flex items-center tooltip tooltip-right"
+                  data-tip="Salin Link"
+                >
+                  <input
+                    className="input input-bordered w-full"
+                    readOnly
+                    type="text"
+                    value={link}
+                    onClick={onCopy}
+                  />
+                  <button
+                    type="button"
+                    onClick={onCopy}
+                    className="absolute right-0 btn btn-ghost"
+                  >
+                    <BiCopy className="text-xl" />
+                  </button>
+                </div>
+              )}
+            </form>
+          </div>
         </div>
-        <div className="join">
-          <span className="join-item p-3 bg-primary text-primary-content">
-            linkmate/
-          </span>
-          <input
-            className="input input-bordered join-item w-full"
-            type="text"
-            placeholder="Masukkan nama linkmu"
-            {...register('urlShort', { minLength: 3 })}
-          />
-        </div>
-        <button
-          type="submit"
-          className="btn btn-primary btn-wide"
-          disabled={mutation.isLoading}
+        <div
+          className={`ml-8 card flex-shrink-0 w-full py-24 max-w-sm shadow-2xl ${
+            mutation.isSuccess
+              ? 'bg-success text-success-content shadow-success'
+              : mutation.isError
+              ? 'bg-error text-error-content shadow-error'
+              : ''
+          }`}
         >
-          {mutation.isLoading && <CgSpinner className="animate-spin" />}
-          {mutation.isLoading ? 'Memuat...' : 'Potong!'}
-        </button>
-      </form>
+          <div className="card-body text-center text-3xl">
+            Lottie <br />
+            {!mutation.isLoading && mutation.isSuccess && 'Berhasil :)'}
+            {!mutation.isLoading && mutation.isError && 'Gagal :('}
+          </div>
+        </div>
+      </div>
     </>
   )
 }
