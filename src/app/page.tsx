@@ -28,7 +28,7 @@ const routes = [
     label: 'List',
   },
   {
-    href: '/contact',
+    href: '#contact',
     label: 'Kontak',
   },
 ]
