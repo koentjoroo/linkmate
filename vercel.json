@@ -26,7 +26,7 @@
   "redirects": [
     {
       "source": "/(.*)",
-      "destination": "https://app.lkmt.site/redirect",
+      "destination": "https://app.lkmt.site/api/redirect/$1",
       "has": [
         {
           "type": "host",
