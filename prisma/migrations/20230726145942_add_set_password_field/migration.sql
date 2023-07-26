@@ -1,2 +1,2 @@
 -- AlterTable
-ALTER TABLE `user` ADD COLUMN `setPassword` BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE `User` ADD COLUMN `setPassword` BOOLEAN NOT NULL DEFAULT false;

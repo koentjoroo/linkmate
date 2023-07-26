@@ -5,5 +5,5 @@
 
 */
 -- AlterTable
-ALTER TABLE `user` DROP COLUMN `salt`,
+ALTER TABLE `User` DROP COLUMN `salt`,
     ADD COLUMN `passwordSalt` VARCHAR(191) NULL;
