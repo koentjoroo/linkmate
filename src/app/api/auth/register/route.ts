@@ -26,12 +26,17 @@ export async function POST(request: Request) {
     throw new Error('Email already exist')
   }
 
+  const saltRounds = 10
+  const salt = await bcrypt.genSalt(saltRounds)
+
   const user = await prisma.user.create({
     data: {
       email: body.email,
       name: body.username,
       phoneNumber: body?.phoneNumber ?? null,
-      hashedPassword: await bcrypt.hash(body.password, 10),
+      hashedPassword: await bcrypt.hash(body.password, salt),
+      setPassword: true,
+      passwordSalt: salt,
     },
   })
 

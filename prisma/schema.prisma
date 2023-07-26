@@ -47,6 +47,8 @@ model User {
   fullName       String?
   phoneNumber    String?
   hashedPassword String?
+  passwordSalt   String?
+  setPassword    Boolean   @default(false)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime? @updatedAt
   accounts       Account[]

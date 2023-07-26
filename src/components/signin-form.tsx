@@ -8,6 +8,7 @@ import { useSearchParams } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { useEffect, useMemo } from 'react'
 import { FcInfo } from 'react-icons/fc'
+import GoogleSignInButton from './google-signin-button'
 
 type FormData = {
   username: string
@@ -71,12 +72,17 @@ export function SignInForm() {
     if (type === 'session_expired') {
       toast.error('Sesimu telah habis. Mohon masuk kembali.')
     }
+    if (type === 'change_password_success') {
+      toast.success('Password kamu berhasil diubah! Silahkan login kembali', {
+        duration: 2000,
+      })
+    }
     if (type === 'unauthenticated') {
       toast('Silahkan login terlebih dahulu', {
         icon: <FcInfo />,
       })
     }
-  }, [])
+  }, [params])
 
   return (
     <form
@@ -122,6 +128,12 @@ export function SignInForm() {
           {mutation.isLoading && <CgSpinner className="animate-spin" />}
           {mutation.isLoading ? 'Memuat...' : 'Masuk'}
         </button>
+        <div className="flex items-center gap-4">
+          <span className="h-[2px] rounded-full flex-1 bg-neutral-focus"></span>
+          <span>Atau</span>
+          <span className="h-[2px] rounded-full flex-1 bg-neutral-focus"></span>
+        </div>
+        <GoogleSignInButton />
         <p>
           Tidak punya akun?{' '}
           <Link href="/auth/signup" className="font-bold link-primary">

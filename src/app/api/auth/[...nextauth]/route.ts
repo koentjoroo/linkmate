@@ -4,6 +4,7 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import prisma from '@/lib/prisma'
 import { AuthOptions } from 'next-auth'
+import { signJwtAccessToken } from '@/lib/jwt'
 
 const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -12,6 +13,13 @@ const authOptions: AuthOptions = {
       name: 'Google',
       clientId: process.env.GOOGLE_CLIENT_ID ?? '',
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
+      authorization: {
+        params: {
+          prompt: 'consent',
+          access_type: 'offline',
+          response_type: 'code',
+        },
+      },
     }),
     CredentialsProvider({
       name: 'Credentials',
@@ -50,7 +58,10 @@ const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account, profile }) {
+      if (account?.provider === 'google' && account?.access_token && user) {
+        token.accessToken = signJwtAccessToken(user, {})
+      }
       return { ...token, ...user }
     },
     async session({ session, token }) {

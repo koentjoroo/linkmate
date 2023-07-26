@@ -34,21 +34,10 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const body: PostRequestBody = await request.json()
-  const token = request.headers.get('authorization')?.replace('Bearer ', '')
-  const jwtPayload = verifyJwt(token ?? '')
-  if (!token || !jwtPayload) {
-    return new Response(
-      JSON.stringify({
-        error: 'unauthorized',
-      }),
-      {
-        status: 401,
-      }
-    )
-  }
-
   try {
+    const body: PostRequestBody = await request.json()
+    const token = request.headers.get('authorization')?.replace('Bearer ', '')
+    const jwtPayload = verifyJwt(token ?? '')
     const exist = await prisma.link.findFirst({
       where: {
         urlShort: body.urlShort,
@@ -64,7 +53,7 @@ export async function POST(request: Request) {
       data: {
         urlLong: body.urlLong,
         urlShort: body.urlShort,
-        userId: jwtPayload.id,
+        userId: jwtPayload?.id || null,
       },
     })
     return NextResponse.json(link)
