@@ -3,8 +3,7 @@
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth'
 import { useMutation } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
-import { useSession } from 'next-auth/react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
@@ -20,16 +19,7 @@ export default function HomeShortLinkForm() {
   const [link, setLink] = useState<string>('')
 
   const axiosAuth = useAxiosAuth()
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    watch,
-  } = useForm<FormData>()
-
-  const router = useRouter()
-  const { data: session } = useSession()
+  const { register, handleSubmit, setValue } = useForm<FormData>()
 
   const mutation = useMutation(
     async (formData: FormData) => {
@@ -43,9 +33,9 @@ export default function HomeShortLinkForm() {
       onError: (error) => {
         setLink('')
         if (error instanceof AxiosError) {
-          toast.error(error.response?.data?.error)
+          toast.error(String(error.response?.data?.error))
         } else if (error instanceof Error) {
-          toast.error(error.message)
+          toast.error(String(error.message))
         }
       },
     }

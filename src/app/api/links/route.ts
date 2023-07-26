@@ -49,13 +49,23 @@ export async function POST(request: Request) {
         { status: 409 }
       )
     }
-    const link = await prisma.link.create({
-      data: {
-        urlLong: body.urlLong,
-        urlShort: body.urlShort,
-        userId: jwtPayload?.id || null,
-      },
-    })
+    let link = null
+    if (jwtPayload?.id) {
+      link = await prisma.link.create({
+        data: {
+          urlLong: body.urlLong,
+          urlShort: body.urlShort,
+          userId: jwtPayload?.id,
+        },
+      })
+    } else {
+      link = await prisma.link.create({
+        data: {
+          urlLong: body.urlLong,
+          urlShort: body.urlShort,
+        },
+      })
+    }
     return NextResponse.json(link)
   } catch (error) {
     console.error(error)
