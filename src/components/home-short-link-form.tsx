@@ -37,9 +37,6 @@ export default function HomeShortLinkForm() {
     },
     {
       onSuccess: (response) => {
-        if (response.status === 401) {
-          router.push('/auth/signin')
-        }
         setLink(shapeLink(response.data.urlShort))
         toast.success('Berhasil memperpendek link!')
       },
@@ -55,16 +52,8 @@ export default function HomeShortLinkForm() {
   )
 
   const onSubmit = handleSubmit((data) => {
-    if (!session?.user) {
-      const params = new URLSearchParams()
-      params.append('redirect', 'unauthenticated')
-      params.append('urlShort', watch('urlShort'))
-      params.append('urlLong', watch('urlLong'))
-      router.push(`/auth/signin?${params.toString()}`)
-    } else {
-      setLink('')
-      mutation.mutate(data)
-    }
+    setLink('')
+    mutation.mutate(data)
   })
 
   const onCopy = async () => {
