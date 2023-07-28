@@ -35,28 +35,28 @@ const routes = [
 
 const team = [
   {
-    imageUrl: '/964-200x200.jpg',
+    imageUrl: '/images/annisa.webp',
     name: 'Annisa Damayati',
     num: '21.11.4260',
-    text: 'Tugas',
+    text: 'Front End, PPT',
   },
   {
-    imageUrl: '/964-200x200.jpg',
+    imageUrl: '/images/aryo.webp',
     name: 'Aryo Bimo Wicaksono',
     num: '21.11.4311',
-    text: 'Tugas',
+    text: 'Back End',
   },
   {
-    imageUrl: '/964-200x200.jpg',
+    imageUrl: '/images/salmaa.webp',
     name: 'Mauhiba Salmaa Ghaisani',
     num: '21.11.4264',
-    text: 'Tugas',
+    text: 'Front End, PPT',
   },
   {
-    imageUrl: '/964-200x200.jpg',
+    imageUrl: '/images/amel.webp',
     name: 'Ameilia Nurcahyandari Sutomo',
     num: '21.11.4314',
-    text: 'Tugas',
+    text: 'Front End, Desain',
   },
 ]
 
@@ -123,9 +123,9 @@ export default async function Home() {
               {team.map((member) => (
                 <li
                   key={member.num}
-                  className="w-1/2 p-4 flex gap-8 flex-col lg:flex-row"
+                  className="w-full lg:w-1/2 p-2 py-4 flex gap-8 flex-col items-center text-center xl:text-left xl:flex-row"
                 >
-                  <div className="w-1/3 rounded-full overflow-clip">
+                  <div className="min-w-[200px] w-1/3 aspect-square rounded-full overflow-clip">
                     <Image
                       src={member.imageUrl}
                       width={400}

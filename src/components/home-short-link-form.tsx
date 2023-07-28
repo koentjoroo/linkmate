@@ -1,6 +1,7 @@
 'use client'
 
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth'
+import { Player } from '@lottiefiles/react-lottie-player'
 import { useMutation } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 import { useSearchParams } from 'next/navigation'
@@ -73,7 +74,7 @@ export default function HomeShortLinkForm() {
 
   return (
     <>
-      <div className="hero-content w-full container mx-auto p-16">
+      <div className="hero-content flex-col-reverse lg:flex-row w-full container mx-auto p-16">
         <div>
           <article className="prose prose-2xl">
             <h1>Perpendek link dengan sekali klik!</h1>
@@ -133,19 +134,19 @@ export default function HomeShortLinkForm() {
           </div>
         </div>
         <div
-          className={`ml-8 card flex-shrink-0 w-full py-24 max-w-sm shadow-2xl ${
+          className={`ml-8 card flex-shrink-0 w-full max-w-sm ${
             mutation.isSuccess
-              ? 'bg-success text-success-content shadow-success'
+              ? 'bg-success text-success-content shadow-2xl shadow-success'
               : mutation.isError
-              ? 'bg-error text-error-content shadow-error'
+              ? 'bg-error text-error-content shadow-2xl shadow-error'
               : ''
           }`}
         >
-          <div className="card-body text-center text-3xl">
-            Lottie <br />
-            {!mutation.isLoading && mutation.isSuccess && 'Berhasil :)'}
-            {!mutation.isLoading && mutation.isError && 'Gagal :('}
-          </div>
+          <Player
+            autoplay
+            loop
+            src="https://assets5.lottiefiles.com/packages/lf20_1cazwtnc.json"
+          ></Player>
         </div>
       </div>
     </>
