@@ -145,7 +145,7 @@ export default async function Home() {
             </ul>
           </div>
         </section>
-        <section id="kontak" className="my-32">
+        <section id="contact" className="my-32">
           <div className="prose container mx-auto">
             <h2>Kontak</h2>
             <p>
